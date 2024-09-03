@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [id, setId] = useState('');
+  const [password, setPassword] = useState('');
+  
+  const handleSubmit = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    // Make a POST request with the form data
+    axios.post('/api/login', {
+      id: id,
+      password: password
+    })
+    .then(response => {
+      alert('성공!');
+    })
+    .catch(error => {
+      alert('실패!');
+    });
+  };
+
 
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <form onSubmit={handleSubmit}>
+          <input 
+            type="text" 
+            placeholder="id" 
+            value={id} 
+            onChange={(e) => setId(e.target.value)} // Update id state on input change
+          />
+          <input 
+            type="password" 
+            placeholder="pw" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} // Update password state on input change
+          />
+          <input type="submit" value="Login" />
+        </form>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
