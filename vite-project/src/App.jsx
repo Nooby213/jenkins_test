@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
-  const [id, setId] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   
   const handleSubmit = (event) => {
@@ -11,14 +11,14 @@ function App() {
 
     // Make a POST request with the form data
     axios.post('/api/login', {
-      id: id,
+      username: username,
       password: password
     })
     .then(response => {
-      alert('성공!');
+      alert('성공' + response);
     })
     .catch(error => {
-      alert('실패!');
+      alert('실패' + error);
     });
   };
 
@@ -29,9 +29,9 @@ function App() {
       <form onSubmit={handleSubmit}>
           <input 
             type="text" 
-            placeholder="id" 
-            value={id} 
-            onChange={(e) => setId(e.target.value)} // Update id state on input change
+            placeholder="username" 
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)} // Update id state on input change
           />
           <input 
             type="password" 
