@@ -5,10 +5,11 @@ FROM openjdk:17-jdk-slim AS build
 WORKDIR /app
 
 # Gradle Wrapper와 관련 파일만 먼저 복사
-COPY gradlew gradlew
-COPY gradle gradle
+COPY . .
+# COPY gradlew gradlew
+# COPY gradle gradle
 
-# gradlew 실행 권한 부여
+# gradlew 실행 권한 부여 (복사 직후 실행)
 RUN chmod +x gradlew
 
 # 의존성 설치 (변경 빈도가 적은 의존성만 설치해서 캐싱 효율을 높임)
@@ -16,7 +17,7 @@ COPY build.gradle settings.gradle ./
 RUN ./gradlew dependencies --no-daemon
 
 # 나머지 소스 코드 복사
-COPY . .
+# COPY . .
 
 # 빌드
 RUN ./gradlew build --no-daemon
