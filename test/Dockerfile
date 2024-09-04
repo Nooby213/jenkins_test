@@ -20,7 +20,7 @@ RUN ./gradlew dependencies --no-daemon
 # COPY . .
 
 # 빌드
-RUN ./gradlew build --no-daemon
+RUN ./gradlew clean build --no-daemon
 
 # 빌드 결과물을 실행할 이미지
 FROM openjdk:17-jdk-slim
