@@ -1,33 +1,37 @@
-# 빌드 이미지로 최신 Node.js 버전 지정 (LTS 버전)
-FROM node:lts AS build
+# Stage 1: Build the frontend
+FROM node:16 AS build
 
+# Set the working directory
 WORKDIR /app
 
-# 라이브러리 설치에 필요한 파일만 복사
-COPY package.json .
-COPY package-lock.json .
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-# 라이브러리 설치
-RUN npm ci
+# Install dependencies
+RUN npm install
 
-# 소스코드 복사
-COPY . /app
+# Copy the source code
+COPY . .
 
-# 소스코드 빌드
+# Build the frontend for production
 RUN npm run build
 
-# 프로덕션 스테이지 - 최신 Nginx 사용 (alpine 기반)
+# Stage 2: Serve frontend with Nginx
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf.template
-ENV BACKEND_HOST localhost
+
+# Copy custom Nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+ENV BACKEND_HOST backend
 ENV BACKEND_PORT 8000
 
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Remove the default Nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-# 빌드 이미지에서 생성된 dist 폴더를 nginx 이미지로 복사
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy the built frontend files from the build stage
+COPY --from=build /app/build /usr/share/nginx/html
 
+# Expose port 80
 EXPOSE 80
-ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]

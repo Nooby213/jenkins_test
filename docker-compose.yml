@@ -1,60 +1,47 @@
-version: '3.8'
-
 services:
+  # mysql:
+  #   build:
+  #     context: ./db
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
+  #   networks:
+  #     - app-network
+  #   # db 폴더를 context로 설정
+
+  #   restart: always
+
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend
+      # backend 폴더를 context로 설정
+      context: ./test
+      dockerfile: Dockerfile  # test 폴더 내 Dockerfile.backend
     ports:
-      - "8000:8000"
-    environment:
-      - DB_HOST=db  # 서비스 이름과 일치시킴
-      - DB_PORT=3306
-      - DB_NAME=mydatabase
-      - DB_USER=root  # DB와 일치시키도록 root로 변경
-      - DB_PASSWORD=root_password
-    depends_on:
-      - db
+      - "8000:8080"
     networks:
       - app-network
-    restart: on-failure
+    restart: on_failure
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: frontend
-    ports:
-      - "80:80"
+      # frontend 폴더를 context로 설정
+      context: ./vite-project
+      dockerfile: Dockerfile  # vite-project 폴더 내 Dockerfile.frontend
     environment:
       - BACKEND_HOST=backend
-      - BACKEND_PORT=8000
+    ports:
+      - "80:80"
     depends_on:
       - backend
     networks:
       - app-network
-    restart: on-failure
-
-  db:
-    image: mysql:latest
-    container_name: db  # 컨테이너 이름을 서비스 이름과 일치시킴
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: mydatabase
-      MYSQL_USER: root  # root로 변경
-      MYSQL_PASSWORD: root_password
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - app-network
-    restart: always
-
-volumes:
-  db_data:
+    restart: on_failure
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mysql_data:
